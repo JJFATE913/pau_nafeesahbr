@@ -1,0 +1,43 @@
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  background: #08080a;
+  color: #fbf7fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: anywhere;
+}
+
+a {
+  color: inherit;
+}
+
+.hero-mesh {
+  background:
+    radial-gradient(circle at 12% 20%, rgba(226, 24, 122, 0.28), transparent 34%),
+    radial-gradient(circle at 88% 10%, rgba(142, 42, 163, 0.32), transparent 32%),
+    radial-gradient(circle at 70% 80%, rgba(244, 167, 197, 0.16), transparent 36%),
+    #08080a;
+}
