@@ -1,5 +1,5 @@
 -- Schema for the D1 database. Apply with:
---   npx wrangler d1 execute pau-nafeesah --remote --file=./schema.sql
+--   npx wrangler d1 execute pau_nafeesahdb --remote --file=./schema.sql
 
 -- Appointments, blocked hours, and gallery entries. The primary key is what stops two
 -- guests from booking the same slot: the second insert simply does nothing.

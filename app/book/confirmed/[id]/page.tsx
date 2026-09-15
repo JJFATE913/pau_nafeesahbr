@@ -1,6 +1,6 @@
 import AddToCalendarButtons from "@/components/AddToCalendarButtons";
-import { getAppointmentById } from "@/lib/appointments";
-import { business, formatSlotLabel } from "@/lib/business";
+import { appointmentDuration, getAppointmentById } from "@/lib/appointments";
+import { business, formatSlotRange } from "@/lib/business";
 import { calendarLinks } from "@/lib/calendar";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
@@ -51,20 +51,21 @@ export default async function BookingConfirmedPage({
         ) : null}
         {texts === "setup" ? (
           <Alert severity="info" sx={{ mb: 3 }}>
-            The appointment is booked. Confirmation texts will send once Twilio and OWNER_PHONE are
-            set in the server environment.
+            The appointment is booked. Confirmation texts are optional and are not connected yet.
+            Call or text the studio at {business.phoneDisplay} if you need to change this visit.
           </Alert>
         ) : null}
 
         <Typography color="text.secondary" sx={{ fontSize: 18, mb: 4 }}>
-          {appointment.name}, we have {when} at {formatSlotLabel(appointment.time)} held at{" "}
-          {business.name}.{" "}
+          {appointment.name}, we have {when} at{" "}
+          {formatSlotRange(appointment.time, appointmentDuration(appointment))}
+          {appointment.service ? ` for ${appointment.service}` : ""} held at {business.name}.{" "}
           {texts === "sent"
             ? "A confirmation text was sent to your phone and to the studio."
             : texts === "partial"
               ? "Please keep this page — one of the confirmation texts may not have arrived."
-              : "Keep this page to add the visit to a calendar. Confirmation texts will go out once studio messaging is connected."}{" "}
-          The same add-to-calendar buttons are linked from those texts.
+              : `Keep this page to add the visit to a calendar. You can also call or text the studio at ${business.phoneDisplay}.`}{" "}
+          Use the buttons below to add it to Google, Outlook, or Apple Calendar.
         </Typography>
 
         <Box

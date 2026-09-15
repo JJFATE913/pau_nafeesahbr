@@ -107,8 +107,7 @@ export default function AdminPage() {
               </Alert>
             ) : null}
             <Typography sx={{ mb: 2 }} color="text.secondary">
-              Sign in to block appointment hours and update Past Customer photos. Default local
-              password is <strong>beautyroom</strong>.
+              Sign in to block appointment hours and update Past Customer photos.
             </Typography>
             <TextField
               label="Staff password"

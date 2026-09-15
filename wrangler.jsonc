@@ -1,36 +1,44 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "pau-nafeesah-beauty-room",
-  "main": ".open-next/worker.js",
-  "compatibility_date": "2026-08-01",
-  // nodejs_compat is required by the Next.js adapter. global_fetch_strictly_public lets
-  // the Worker call Twilio over the public internet.
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
-  },
-  "observability": {
-    "enabled": true
-  },
-  "services": [
-    {
-      "binding": "WORKER_SELF_REFERENCE",
-      "service": "pau-nafeesah-beauty-room"
-    }
-  ],
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "pau-nafeesah",
-      // Replace with the id printed by `npx wrangler d1 create pau-nafeesah`.
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "PHOTOS",
-      "bucket_name": "pau-nafeesah-photos"
-    }
-  ]
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "pau-nafeesah-beauty-room",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2026-08-01",
+	// nodejs_compat is required by the Next.js adapter. global_fetch_strictly_public lets
+	// the Worker call Twilio over the public internet.
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"SALON_TIMEZONE": "America/Puerto_Rico",
+		"NEXT_PUBLIC_SITE_URL": "https://pau-nafeesahbr.com",
+		"OWNER_PHONE": "+17874642599"
+	},
+	"services": [
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "pau-nafeesah-beauty-room"
+		}
+	],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "pau_nafeesahdb",
+			"database_id": "69289099-a93d-4659-8d46-f09c351d11fc",
+			"remote": true
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "PHOTOS",
+			"bucket_name": "pau-nafeesahphotos"
+		}
+	]
 }

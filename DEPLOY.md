@@ -83,7 +83,7 @@ R2 is off on new accounts until you accept it once: Cloudflare dashboard → **R
 Storage** → enable. Then:
 
 ```bash
-npx wrangler r2 bucket create pau-nafeesah-photos
+npx wrangler r2 bucket create pau-nafeesahphotos
 ```
 
 Leave the bucket **private**. Photos are served through `/api/gallery/photo/...`, not as
@@ -99,20 +99,26 @@ npx wrangler secret put ADMIN_SECRET
 npx wrangler secret put NEXT_PUBLIC_SITE_URL
 npx wrangler secret put SALON_TIMEZONE
 npx wrangler secret put OWNER_PHONE
+```
+
+`OWNER_PHONE` is `+17874642599` (the studio number guests already see). Twilio secrets below
+are optional — bookings work without them; confirmation texts do not send until they are set.
+
+```bash
 npx wrangler secret put TWILIO_ACCOUNT_SID
 npx wrangler secret put TWILIO_AUTH_TOKEN
 npx wrangler secret put TWILIO_PHONE_NUMBER
 ```
 
 Use the real public URL for `NEXT_PUBLIC_SITE_URL` (for example `https://paunafeesah.com`)
-so texts and calendar invites do not point at localhost. `SALON_TIMEZONE` is typically
-`America/New_York`.
+so texts and calendar invites do not point at localhost. `SALON_TIMEZONE` is
+`America/Puerto_Rico`.
 
 `NEXT_PUBLIC_SITE_URL` is also read at **build** time. Before you deploy, either export it
 in the shell or put it in `.env.production` (that file is gitignored):
 
 ```
-NEXT_PUBLIC_SITE_URL=https://your-domain.com
+NEXT_PUBLIC_SITE_URL=https://pau-nafeesahbr.com
 ```
 
 ## 6. Deploy
@@ -177,7 +183,7 @@ build`, and the deploy command is `npx opennextjs-cloudflare deploy`.
 
 D1: dashboard → D1 → `pau-nafeesah` → backups / export. Take a copy before any schema change.
 
-R2: dashboard → R2 → `pau-nafeesah-photos`. Enable object versioning if you want deleted
+R2: dashboard → R2 → `pau-nafeesahphotos`. Enable object versioning if you want deleted
 photos to be recoverable.
 
 There is no operating system to patch. Changing `ADMIN_SECRET` signs every staff session out

@@ -8,11 +8,12 @@ import {
   isValidDateIso,
   isValidName,
   isValidPhone,
-  isValidTimeSlot,
+  isValidStartTime,
   listAppointmentsForDate,
   normalizePhone,
   type Appointment,
 } from "@/lib/appointments";
+import { durationForService, formatBookingService, isValidBookingService } from "@/lib/business";
 import { sendAppointmentTexts } from "@/lib/sms";
 import { getBlockedTimes } from "@/lib/blocked-hours";
 import { checkRateLimit, clientIdentifier } from "@/lib/rate-limit";
@@ -39,6 +40,8 @@ export async function POST(request: Request) {
   const phone = typeof body.phone === "string" ? body.phone.trim() : "";
   const date = typeof body.date === "string" ? body.date : "";
   const time = typeof body.time === "string" ? body.time : "";
+  const serviceKind = typeof body.serviceKind === "string" ? body.serviceKind : "";
+  const serviceDetail = typeof body.serviceDetail === "string" ? body.serviceDetail.trim() : "";
 
   if (!isValidName(name)) {
     return NextResponse.json({ error: "Please enter your full name." }, { status: 400 });
@@ -46,7 +49,18 @@ export async function POST(request: Request) {
   if (!isValidPhone(phone)) {
     return NextResponse.json({ error: "Please enter a valid phone number." }, { status: 400 });
   }
-  if (!isValidDateIso(date) || !isValidTimeSlot(time)) {
+  if (!isValidBookingService(serviceKind, serviceDetail)) {
+    return NextResponse.json(
+      {
+        error:
+          serviceKind === "other"
+            ? "Please describe the service you want."
+            : "Please choose a service.",
+      },
+      { status: 400 },
+    );
+  }
+  if (!isValidDateIso(date) || !isValidStartTime(time, durationForService(serviceKind))) {
     return NextResponse.json({ error: "Please choose a date and time." }, { status: 400 });
   }
 
@@ -55,9 +69,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "That date is not available." }, { status: 400 });
   }
 
+  const durationMinutes = durationForService(serviceKind);
   const appointments = await listAppointmentsForDate(date);
   const blocked = await getBlockedTimes(date);
-  const slot = getAvailableSlots(date, appointments, blocked).find((item) => item.time === time);
+  const slot = getAvailableSlots(date, appointments, blocked, durationMinutes).find(
+    (item) => item.time === time,
+  );
   if (!slot?.available) {
     return NextResponse.json({ error: "That time is not available. Please choose another." }, { status: 409 });
   }
@@ -68,6 +85,10 @@ export async function POST(request: Request) {
     phone: normalizePhone(phone),
     date,
     time,
+    serviceKind,
+    serviceDetail: serviceKind === "other" ? serviceDetail : "",
+    service: formatBookingService(serviceKind, serviceDetail),
+    durationMinutes,
     createdAt: new Date().toISOString(),
   };
 

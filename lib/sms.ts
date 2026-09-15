@@ -1,7 +1,7 @@
-import { business, formatSlotLabel } from "@/lib/business";
+import { appointmentDuration, type Appointment } from "@/lib/appointments";
+import { business, formatSlotRange } from "@/lib/business";
 import { calendarPageUrl } from "@/lib/calendar";
 import { toE164 } from "@/lib/site";
-import type { Appointment } from "@/lib/appointments";
 
 export type SmsResult = {
   client: boolean;
@@ -14,8 +14,9 @@ function twilioConfig() {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const fromNumber = process.env.TWILIO_PHONE_NUMBER;
-  const studioPhone = process.env.OWNER_PHONE || process.env.STUDIO_PHONE;
-  if (!accountSid || !authToken || !fromNumber || !studioPhone) return null;
+  const studioPhone =
+    process.env.OWNER_PHONE || process.env.STUDIO_PHONE || business.phoneE164;
+  if (!accountSid || !authToken || !fromNumber) return null;
   return { accountSid, authToken, fromNumber, studioPhone };
 }
 
@@ -49,14 +50,15 @@ export async function sendAppointmentTexts(appointment: Appointment): Promise<Sm
       client: false,
       studio: false,
       skipped: true,
-      error: "Add Twilio credentials and OWNER_PHONE to send confirmation texts.",
+      error: "SMS is optional. Add Twilio credentials to text the guest and the studio.",
     };
   }
 
-  const when = `${appointment.date} at ${formatSlotLabel(appointment.time)}`;
+  const when = formatSlotRange(appointment.time, appointmentDuration(appointment));
+  const service = appointment.service || "service to confirm";
   const page = calendarPageUrl(appointment.id);
-  const clientBody = `${business.name}: you're confirmed for ${when}. Add it to your calendar here: ${page}`;
-  const studioBody = `New booking — ${appointment.name} (${appointment.phone}) on ${when}. Add to your calendar: ${page}`;
+  const clientBody = `${business.name}: you're confirmed for ${service} on ${appointment.date} ${when}. Add it to your calendar here: ${page}`;
+  const studioBody = `New booking — ${appointment.name} (${appointment.phone}) for ${service} on ${appointment.date} ${when}. Add to your calendar: ${page}`;
 
   const result: SmsResult = { client: false, studio: false, skipped: false };
 

@@ -16,9 +16,11 @@ export default function BookPage() {
           Book an appointment
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 680, mb: 6, fontSize: 18 }}>
-          Select a studio day on the calendar. Open hour-long times appear immediately. Then leave
-          your name and phone number to hold the chair. We text you and the studio, and you can add
-          the visit to your calendar.
+          Select a service, then a studio day (Monday–Saturday). Open start times match the length
+          of that visit — 30 minutes for brow epilation, one hour for lash lifts, brow lamination,
+          and other services, two hours for powder brows and lash extensions. The studio is open
+          9:00 AM–7:00 PM; a visit may run until 8:00 PM, so a 6:00 PM powder-brow or lash-extension
+          start is available. Leave your name and phone to hold the chair.
         </Typography>
         <BookingCalendar />
       </Container>

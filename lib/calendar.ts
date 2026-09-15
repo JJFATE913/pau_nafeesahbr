@@ -1,12 +1,8 @@
-import { business, formatSlotLabel } from "@/lib/business";
+import { addMinutes, business, formatSlotLabel, formatSlotRange } from "@/lib/business";
 import { salonTimezone, siteUrl } from "@/lib/site";
-import type { Appointment } from "@/lib/appointments";
+import { appointmentDuration, type Appointment } from "@/lib/appointments";
 
 export type CalendarAudience = "guest" | "studio";
-
-function pad(value: number) {
-  return String(value).padStart(2, "0");
-}
 
 function localStamp(dateIso: string, time: string) {
   const [year, month, day] = dateIso.split("-");
@@ -14,10 +10,8 @@ function localStamp(dateIso: string, time: string) {
   return `${year}${month}${day}T${hours}${minutes}00`;
 }
 
-function endTime(time: string) {
-  const [hours, minutes] = time.split(":").map(Number);
-  const endHours = hours + 1;
-  return `${pad(endHours)}:${pad(minutes)}`;
+function visitEnd(appointment: Appointment) {
+  return addMinutes(appointment.time, appointmentDuration(appointment));
 }
 
 function isoLocal(dateIso: string, time: string) {
@@ -25,18 +19,20 @@ function isoLocal(dateIso: string, time: string) {
 }
 
 function eventCopy(appointment: Appointment, audience: CalendarAudience) {
-  const when = `${appointment.date} at ${formatSlotLabel(appointment.time)}`;
+  const window = formatSlotRange(appointment.time, appointmentDuration(appointment));
+  const when = `${appointment.date} ${window}`;
   const location = business.addressLines.join(", ");
+  const service = appointment.service ? ` Service: ${appointment.service}.` : "";
   if (audience === "studio") {
     return {
-      title: `${appointment.name} — ${business.shortName}`,
-      details: `Studio booking with ${appointment.name}. Phone: ${appointment.phone}. ${when}.`,
+      title: `${appointment.name} — ${appointment.service || business.shortName}`,
+      details: `Studio booking with ${appointment.name}. Phone: ${appointment.phone}.${service} ${when}.`,
       location,
     };
   }
   return {
-    title: `${business.name} appointment`,
-    details: `Your appointment at ${business.name} on ${when}. ${business.phoneDisplay}`,
+    title: `${business.name}: ${appointment.service || "appointment"}`,
+    details: `Your appointment at ${business.name} on ${appointment.date} at ${formatSlotLabel(appointment.time)} (${window}).${service} ${business.phoneDisplay}`,
     location,
   };
 }
@@ -52,7 +48,7 @@ export function icsPath(id: string, audience: CalendarAudience) {
 export function googleCalendarUrl(appointment: Appointment, audience: CalendarAudience) {
   const { title, details, location } = eventCopy(appointment, audience);
   const start = localStamp(appointment.date, appointment.time);
-  const end = localStamp(appointment.date, endTime(appointment.time));
+  const end = localStamp(appointment.date, visitEnd(appointment));
   const params = new URLSearchParams({
     action: "TEMPLATE",
     text: title,
@@ -73,7 +69,7 @@ export function outlookCalendarUrl(appointment: Appointment, audience: CalendarA
     body: details,
     location,
     startdt: isoLocal(appointment.date, appointment.time),
-    enddt: isoLocal(appointment.date, endTime(appointment.time)),
+    enddt: isoLocal(appointment.date, visitEnd(appointment)),
   });
   return `https://outlook.live.com/calendar/0/deeplink/compose?${params.toString()}`;
 }
@@ -103,7 +99,7 @@ export function buildIcs(appointment: Appointment, audience: CalendarAudience) {
     `UID:${appointment.id}@paunafeesahbeauty.com`,
     `DTSTAMP:${stamp}`,
     `DTSTART;TZID=${tz}:${localStamp(appointment.date, appointment.time)}`,
-    `DTEND;TZID=${tz}:${localStamp(appointment.date, endTime(appointment.time))}`,
+    `DTEND;TZID=${tz}:${localStamp(appointment.date, visitEnd(appointment))}`,
     foldIcsLine(`SUMMARY:${title}`),
     foldIcsLine(`DESCRIPTION:${details.replace(/\n/g, "\\n")}`),
     foldIcsLine(`LOCATION:${location}`),

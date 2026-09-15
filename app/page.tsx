@@ -165,7 +165,8 @@ export default function HomePage() {
                 By appointment, in studio
               </Typography>
               <Typography color="text.secondary" sx={{ fontSize: 18, mb: 3 }}>
-                Choose a date on the booking calendar, pick an open hour, and fill out the form. We hold the chair and confirm by call or text.
+                Choose a service, pick a date, and take an open start time. Longer visits hold more
+                of the chair. We confirm by call or text.
               </Typography>
               {business.addressLines.map((line) => (
                 <Typography key={line}>{line}</Typography>

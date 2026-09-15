@@ -1,6 +1,6 @@
 "use client";
 
-import { formatSlotLabel } from "@/lib/business";
+import { CLOSED_WEEKDAYS, formatSlotLabel } from "@/lib/business";
 import { readJson, type ApiError } from "@/lib/api-client";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
@@ -70,16 +70,19 @@ export default function AdminAvailabilityManager() {
   }
 
   const shouldDisableDate = (value: Dayjs) => {
-    const weekday = value.day();
-    return weekday === 0 || weekday === 1 || value.isBefore(dayjs(), "day");
+    return (
+      (CLOSED_WEEKDAYS as readonly number[]).includes(value.day()) ||
+      value.isBefore(dayjs(), "day")
+    );
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Stack spacing={3}>
         <Typography color="text.secondary" sx={{ maxWidth: 640 }}>
-          Choose a studio day, then tap an open hour to take it off the book. Tap a blocked hour to
-          put it back. Guest bookings stay reserved until you contact them separately.
+          Choose a studio day, then tap an open time to take it off the book. The chair is shown in
+          30-minute blocks, so a two-hour visit occupies four of them. Tap a blocked time to put it
+          back. Guest bookings stay reserved until you contact them separately.
         </Typography>
         {error ? <Alert severity="error">{error}</Alert> : null}
         <Box
@@ -118,8 +121,8 @@ export default function AdminAvailabilityManager() {
             </Typography>
             <Typography color="text.secondary" sx={{ mb: 2 }}>
               {selectedDate
-                ? "Green hours are open. Magenta hours are blocked. Grey hours already have a guest."
-                : "Select a day to edit hour-long chairs."}
+                ? "Open times are available. Magenta times are blocked. Grey times already have a guest."
+                : "Select a day to edit 30-minute chairs."}
             </Typography>
             {selectedDate ? (
               <Stack direction="row" sx={{ flexWrap: "wrap", gap: 1, mb: 2 }}>
@@ -130,7 +133,7 @@ export default function AdminAvailabilityManager() {
                   disabled={busy || loading}
                   onClick={() => void updateHours({ blockAll: true })}
                 >
-                  Block remaining hours
+                  Block remaining times
                 </Button>
                 <Button
                   size="small"
@@ -139,7 +142,7 @@ export default function AdminAvailabilityManager() {
                   disabled={busy || loading}
                   onClick={() => void updateHours({ unblockAll: true })}
                 >
-                  Unblock all hours
+                  Unblock all times
                 </Button>
               </Stack>
             ) : null}

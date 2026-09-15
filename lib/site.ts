@@ -1,5 +1,5 @@
 export function salonTimezone() {
-  return process.env.SALON_TIMEZONE || "America/New_York";
+  return process.env.SALON_TIMEZONE || "America/Puerto_Rico";
 }
 
 export function siteUrl() {
