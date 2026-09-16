@@ -15,6 +15,13 @@ function bindings(): Partial<CloudflareEnv> {
   }
 }
 
+export function runtimeString(name: string) {
+  const fromWorker = (bindings() as Record<string, unknown>)[name];
+  if (typeof fromWorker === "string" && fromWorker.length) return fromWorker;
+  const fromProcess = process.env[name];
+  return fromProcess || undefined;
+}
+
 export async function d1() {
   return bindings().DB;
 }

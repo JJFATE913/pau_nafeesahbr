@@ -4,6 +4,14 @@
 interface CloudflareEnv {
   DB?: D1Database;
   PHOTOS?: R2Bucket;
+  ADMIN_PASSWORD?: string;
+  ADMIN_SECRET?: string;
+  OWNER_PHONE?: string;
+  SALON_TIMEZONE?: string;
+  NEXT_PUBLIC_SITE_URL?: string;
+  TWILIO_ACCOUNT_SID?: string;
+  TWILIO_AUTH_TOKEN?: string;
+  TWILIO_PHONE_NUMBER?: string;
 }
 
 interface D1Database {

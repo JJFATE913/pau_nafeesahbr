@@ -5,7 +5,7 @@ export const business = {
   phoneDisplay: "(787) 464-2599",
   phoneE164: "+17874642599",
   phoneHref: "tel:+17874642599",
-  email: "hello@paunafeesahbeauty.com",
+  email: "paulanatcruz2001@gmail.com",
   addressLines: ["Private studio suite", "By appointment only"],
   instagram: "@pau_nafeesah_br",
   hours: [
@@ -19,14 +19,9 @@ export const business = {
   ],
   services: [
     {
-      title: "Hair Design",
-      description:
-        "Precision cuts, silk presses, color, and protective styling finished with a polished, camera-ready look.",
-    },
-    {
       title: "Lash & Brow Studio",
       description:
-        "Classic and hybrid lash sets, brow mapping, tint, and lamination for a framed, lifted finish.",
+        "Classic and hybrid lash sets, brow mapping, Henna tint, and lamination for a framed, lifted finish.",
     },
     {
       title: "Makeup & Glam",
@@ -34,9 +29,14 @@ export const business = {
         "Soft glam to full beat for events, portraits, and everyday confidence — built to last through your day.",
     },
     {
-      title: "Nail Artistry",
+      title: "Bridal & Special Events",
       description:
-        "Clean prep, structured sets, and custom art in the house palette of black, magenta, pink, and violet.",
+        "Durable, Elegant, Personalized, and camera-ready beauty for your wedding day.",
+    },
+    {
+      title: "Powder Brows",
+      description:
+        "Clean prep, soft, shaded brows that give you a flawless everyday makeup finish.",
     },
   ],
 } as const;

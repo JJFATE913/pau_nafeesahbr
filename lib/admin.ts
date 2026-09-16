@@ -1,3 +1,4 @@
+import { runtimeString } from "@/lib/cloudflare";
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 
@@ -5,7 +6,7 @@ const COOKIE = "pnbr_admin";
 const SESSION_DAYS = 14;
 
 function secret() {
-  const value = process.env.ADMIN_SECRET || process.env.ADMIN_PASSWORD;
+  const value = runtimeString("ADMIN_SECRET") || runtimeString("ADMIN_PASSWORD");
   if (!value) {
     if (process.env.NODE_ENV === "production") {
       throw new Error("Set ADMIN_SECRET before running in production.");
@@ -16,7 +17,7 @@ function secret() {
 }
 
 export function adminPassword() {
-  return process.env.ADMIN_PASSWORD || "beautyroom";
+  return runtimeString("ADMIN_PASSWORD") || "";
 }
 
 function sign(payload: string) {

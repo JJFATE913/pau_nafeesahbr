@@ -6,8 +6,10 @@ import { checkRateLimit, clientIdentifier } from "@/lib/rate-limit";
 const ATTEMPTS_PER_15_MIN = 10;
 
 function passwordMatches(supplied: string) {
+  const expected = adminPassword();
+  if (!expected || !supplied) return false;
   const a = Buffer.from(supplied);
-  const b = Buffer.from(adminPassword());
+  const b = Buffer.from(expected);
   if (a.length !== b.length) return false;
   return timingSafeEqual(a, b);
 }
