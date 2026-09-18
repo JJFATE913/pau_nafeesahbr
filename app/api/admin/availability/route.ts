@@ -17,7 +17,7 @@ import {
 import { TIME_SLOTS, rangesOverlap } from "@/lib/business";
 
 export async function GET(request: Request) {
-  if (!(await isAdminAuthenticated())) {
+  if (!(await isAdminAuthenticated(request))) {
     return NextResponse.json({ error: "Please sign in." }, { status: 401 });
   }
 
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  if (!(await isAdminAuthenticated())) {
+  if (!(await isAdminAuthenticated(request))) {
     return NextResponse.json({ error: "Please sign in." }, { status: 401 });
   }
 

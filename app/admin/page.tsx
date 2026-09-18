@@ -22,7 +22,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     const id = window.setTimeout(() => {
-      fetch("/api/admin")
+      fetch("/api/admin", { credentials: "include" })
         .then((response) => response.json())
         .then((data) => setAuthenticated(Boolean(data.authenticated)))
         .finally(() => setChecking(false));
@@ -36,6 +36,7 @@ export default function AdminPage() {
     const response = await fetch("/api/admin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ password }),
     });
     const data = await response.json();
@@ -47,7 +48,7 @@ export default function AdminPage() {
   }
 
   async function handleLogout() {
-    await fetch("/api/admin", { method: "DELETE" });
+    await fetch("/api/admin", { method: "DELETE", credentials: "include" });
     setAuthenticated(false);
     setPassword("");
   }

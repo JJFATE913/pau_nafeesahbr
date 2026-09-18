@@ -37,7 +37,9 @@ export default function AdminAvailabilityManager() {
     setError(null);
     setLoading(true);
     try {
-      const response = await fetch(`/api/admin/availability?date=${nextDate}`);
+      const response = await fetch(`/api/admin/availability?date=${nextDate}`, {
+        credentials: "include",
+      });
       const data = await readJson<ApiError & { slots?: Slot[] }>(response);
       if (!response.ok) throw new Error(data.error || "Unable to load hours");
       setSlots(data.slots ?? []);
@@ -57,6 +59,7 @@ export default function AdminAvailabilityManager() {
       const response = await fetch("/api/admin/availability", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ date: dateIso, ...payload }),
       });
       const data = await response.json();

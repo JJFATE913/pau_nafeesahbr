@@ -1,6 +1,11 @@
 import { timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
-import { adminPassword, clearAdminCookie, isAdminAuthenticated, setAdminCookie } from "@/lib/admin";
+import {
+  adminPassword,
+  attachAdminSession,
+  clearAdminSession,
+  isAdminAuthenticated,
+} from "@/lib/admin";
 import { checkRateLimit, clientIdentifier } from "@/lib/rate-limit";
 
 const ATTEMPTS_PER_15_MIN = 10;
@@ -14,8 +19,8 @@ function passwordMatches(supplied: string) {
   return timingSafeEqual(a, b);
 }
 
-export async function GET() {
-  return NextResponse.json({ authenticated: await isAdminAuthenticated() });
+export async function GET(request: Request) {
+  return NextResponse.json({ authenticated: await isAdminAuthenticated(request) });
 }
 
 export async function POST(request: Request) {
@@ -36,11 +41,9 @@ export async function POST(request: Request) {
   if (typeof body.password !== "string" || !passwordMatches(body.password)) {
     return NextResponse.json({ error: "Incorrect password." }, { status: 401 });
   }
-  await setAdminCookie();
-  return NextResponse.json({ ok: true });
+  return attachAdminSession(NextResponse.json({ ok: true }), request);
 }
 
 export async function DELETE() {
-  await clearAdminCookie();
-  return NextResponse.json({ ok: true });
+  return clearAdminSession(NextResponse.json({ ok: true }));
 }

@@ -1,6 +1,7 @@
 import { runtimeString } from "@/lib/cloudflare";
 import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
+import type { NextResponse } from "next/server";
 
 const COOKIE = "pnbr_admin";
 const SESSION_DAYS = 14;
@@ -51,23 +52,56 @@ export function verifyAdminToken(token: string | undefined) {
   return timingSafeEqual(a, b);
 }
 
-export async function isAdminAuthenticated() {
-  const store = await cookies();
-  return verifyAdminToken(store.get(COOKIE)?.value);
+function tokenFromCookieHeader(header: string | null) {
+  if (!header) return undefined;
+  for (const part of header.split(";")) {
+    const [key, ...rest] = part.trim().split("=");
+    if (key === COOKIE) {
+      try {
+        return decodeURIComponent(rest.join("="));
+      } catch {
+        return rest.join("=");
+      }
+    }
+  }
+  return undefined;
 }
 
-export async function setAdminCookie() {
-  const store = await cookies();
-  store.set(COOKIE, createAdminToken(), {
+function sessionCookieOptions(secure: boolean) {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    path: "/",
+    secure,
+    maxAge: SESSION_DAYS * 24 * 60 * 60,
+  };
+}
+
+/** Prefer the request Cookie header. Next's cookies() store is empty on some multipart POSTs. */
+export async function isAdminAuthenticated(request?: Request) {
+  if (verifyAdminToken(tokenFromCookieHeader(request?.headers.get("cookie") ?? null))) {
+    return true;
+  }
+  try {
+    const store = await cookies();
+    return verifyAdminToken(store.get(COOKIE)?.value);
+  } catch {
+    return false;
+  }
+}
+
+export function attachAdminSession(response: NextResponse, request: Request) {
+  const secure = new URL(request.url).protocol === "https:";
+  response.cookies.set(COOKIE, createAdminToken(), sessionCookieOptions(secure));
+  return response;
+}
+
+export function clearAdminSession(response: NextResponse) {
+  response.cookies.set(COOKIE, "", {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: SESSION_DAYS * 24 * 60 * 60,
+    maxAge: 0,
   });
-}
-
-export async function clearAdminCookie() {
-  const store = await cookies();
-  store.delete(COOKIE);
+  return response;
 }
