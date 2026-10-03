@@ -92,7 +92,7 @@ export function buildIcs(appointment: Appointment, audience: CalendarAudience) {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Pau-Nafeesah Beauty Room//EN",
+    "PRODID:-//Pau Nafeesah's Beauty Room//EN",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",

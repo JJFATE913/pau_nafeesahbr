@@ -95,7 +95,7 @@ export default async function BookingConfirmedPage({
             Studio calendar
           </Typography>
           <Typography color="text.secondary" sx={{ mb: 2 }}>
-            For Pau-Nafeesah — labeled with the guest name so it is easy to spot in your calendar.
+            For Pau Nafeesah — labeled with the guest name so it is easy to spot in your calendar.
           </Typography>
           <AddToCalendarButtons links={studioLinks} audience="studio" />
         </Box>

@@ -34,7 +34,7 @@ Cloudflare can rebuild from GitHub later.
 ```bash
 git init
 git add .
-git commit -m "Pau-Nafeesah Beauty Room site"
+git commit -m "Pau Nafeesah's Beauty Room site"
 ```
 
 Create an empty **private** repo on GitHub, then:

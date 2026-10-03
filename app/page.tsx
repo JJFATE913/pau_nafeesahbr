@@ -98,7 +98,7 @@ export default function HomePage() {
             >
               <Image
                 src="/Logo_BR.PNG"
-                alt="Pau-Nafeesah Beauty Room logo"
+                alt="Pau Nafeesah's Beauty Room logo"
                 fill
                 sizes="(max-width: 900px) 320px, 560px"
                 style={{ objectFit: "contain" }}
@@ -117,7 +117,7 @@ export default function HomePage() {
           Elevated beauty, never rushed
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 720, fontSize: 18, mb: 6 }}>
-          Pau-Nafeesah Beauty Room is a private suite designed for guests who want a polished result
+          Pau Nafeesah&apos;s Beauty Room is a private suite designed for guests who want a polished result
           and a calm experience. Every visit is booked in advance so the chair is yours — no walk-in
           traffic, no waiting room noise. We are here to help you look and feel your best.
         </Typography>
