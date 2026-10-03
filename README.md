@@ -1,4 +1,4 @@
-# Pau-Nafeesah Beauty Room
+# Pau Nafeesah's Beauty Room
 
 Professional salon site built with Next.js, TypeScript, and Material UI.
 

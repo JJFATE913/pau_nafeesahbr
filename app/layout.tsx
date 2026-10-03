@@ -26,7 +26,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Pau-Nafeesah Beauty Room",
+  title: "Pau Nafeesah's Beauty Room",
   description:
     "Private beauty studio for lashes, makeup, powder brows, and epilations. Book an appointment and view the looks of our past satisfied customers.",
 };

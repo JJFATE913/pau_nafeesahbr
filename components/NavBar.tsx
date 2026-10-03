@@ -66,7 +66,7 @@ export default function NavBar() {
                 lineHeight: 1.1,
               }}
             >
-              Pau-Nafeesah
+              Pau Nafeesah&apos;s
             </Typography>
             <Typography
               sx={{

@@ -1,6 +1,6 @@
 export const business = {
-  name: "Pau-Nafeesah Beauty Room",
-  shortName: "Pau-Nafeesah",
+  name: "Pau Nafeesah's Beauty Room",
+  shortName: "Pau Nafeesah",
   tagline: "Luxury beauty, tailored to you",
   phoneDisplay: "(787) 464-2599",
   phoneE164: "+17874642599",
