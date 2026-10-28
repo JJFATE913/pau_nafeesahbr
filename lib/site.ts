@@ -1,9 +1,11 @@
+import { runtimeString } from "@/lib/cloudflare";
+
 export function salonTimezone() {
-  return process.env.SALON_TIMEZONE || "America/Puerto_Rico";
+  return runtimeString("SALON_TIMEZONE") || "America/Puerto_Rico";
 }
 
 export function siteUrl() {
-  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
+  const explicit = runtimeString("NEXT_PUBLIC_SITE_URL")?.replace(/\/$/, "");
   if (explicit) return explicit;
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
   return "http://localhost:3000";

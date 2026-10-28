@@ -4,6 +4,7 @@ import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { business } from "@/lib/business";
+import { LEGAL_EFFECTIVE_DATE, legalNav } from "@/lib/legal";
 
 export default function Footer() {
   return (
@@ -64,6 +65,39 @@ export default function Footer() {
             </Link>
           </Box>
         </Stack>
+        <Box
+          sx={{
+            mt: 6,
+            pt: 3,
+            borderTop: "1px solid rgba(244, 167, 197, 0.12)",
+          }}
+        >
+          <Typography
+            variant="overline"
+            sx={{ color: "info.main", letterSpacing: "0.2em", display: "block", mb: 1.5 }}
+          >
+            Legal
+          </Typography>
+          <Stack direction="row" sx={{ flexWrap: "wrap", columnGap: 2.5, rowGap: 1.25 }}>
+            <Link href="/legal" color="text.secondary" underline="hover" sx={{ fontSize: 13 }}>
+              All policies
+            </Link>
+            {legalNav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                color="text.secondary"
+                underline="hover"
+                sx={{ fontSize: 13 }}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </Stack>
+          <Typography color="text.secondary" sx={{ mt: 2.5, fontSize: 13 }}>
+            © {new Date().getFullYear()} {business.name}. Policies updated {LEGAL_EFFECTIVE_DATE}.
+          </Typography>
+        </Box>
       </Container>
     </Box>
   );

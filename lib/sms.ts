@@ -1,6 +1,7 @@
 import { appointmentDuration, type Appointment } from "@/lib/appointments";
 import { business, formatSlotRange } from "@/lib/business";
 import { calendarPageUrl } from "@/lib/calendar";
+import { runtimeString } from "@/lib/cloudflare";
 import { toE164 } from "@/lib/site";
 
 export type SmsResult = {
@@ -11,11 +12,11 @@ export type SmsResult = {
 };
 
 function twilioConfig() {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const fromNumber = process.env.TWILIO_PHONE_NUMBER;
+  const accountSid = runtimeString("TWILIO_ACCOUNT_SID");
+  const authToken = runtimeString("TWILIO_AUTH_TOKEN");
+  const fromNumber = runtimeString("TWILIO_PHONE_NUMBER");
   const studioPhone =
-    process.env.OWNER_PHONE || process.env.STUDIO_PHONE || business.phoneE164;
+    runtimeString("OWNER_PHONE") || runtimeString("STUDIO_PHONE") || business.phoneE164;
   if (!accountSid || !authToken || !fromNumber) return null;
   return { accountSid, authToken, fromNumber, studioPhone };
 }

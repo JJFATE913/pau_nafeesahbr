@@ -2,6 +2,7 @@ import GalleryGrid from "@/components/GalleryGrid";
 import { listGallery, publicGalleryPath } from "@/lib/gallery";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +27,12 @@ export default async function PastCustomersPage() {
         </Typography>
         <Typography color="text.secondary" sx={{ maxWidth: 640, mb: 6, fontSize: 18 }}>
           Recent finishes from the chair. This gallery is updated on-site as new looks are
-          photographed, so it always reflects the current work of the room.
+          photographed, so it always reflects the current work of the room. Identifiable photos are
+          posted with guest permission; see our{" "}
+          <Link href="/legal/photo-policy" color="info.main" underline="hover">
+            Photo Policy
+          </Link>{" "}
+          to request a removal.
         </Typography>
         <GalleryGrid items={items} />
       </Container>

@@ -12,24 +12,43 @@ import {
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
+import Link from "@mui/material/Link";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import NextLink from "next/link";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react";
 
 type Slot = { time: string; available: boolean };
+
+function PolicyLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      component={NextLink}
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      color="info.main"
+      underline="hover"
+      onClick={(event) => event.stopPropagation()}
+    >
+      {children}
+    </Link>
+  );
+}
 
 export default function BookingCalendar() {
   const router = useRouter();
@@ -42,6 +61,7 @@ export default function BookingCalendar() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [calendarReady, setCalendarReady] = useState(false);
   const slotsRequest = useRef(0);
@@ -302,11 +322,34 @@ export default function BookingCalendar() {
                 autoComplete="tel"
                 placeholder={business.phoneDisplay}
               />
+              <FormControlLabel
+                sx={{ alignItems: "flex-start", ml: 0, mr: 0 }}
+                control={
+                  <Checkbox
+                    required
+                    checked={agreed}
+                    onChange={(event) => setAgreed(event.target.checked)}
+                    sx={{ mt: -0.6 }}
+                  />
+                }
+                label={
+                  <Typography color="text.secondary" sx={{ fontSize: 13, lineHeight: 1.55 }}>
+                    I agree to the{" "}
+                    <PolicyLink href="/legal/terms">Terms of Use</PolicyLink>,{" "}
+                    <PolicyLink href="/legal/privacy">Privacy Policy</PolicyLink>,{" "}
+                    <PolicyLink href="/legal/booking-policy">Booking Policy</PolicyLink>,{" "}
+                    <PolicyLink href="/legal/sms-terms">SMS Terms</PolicyLink>, and{" "}
+                    <PolicyLink href="/legal/disclaimer">Service Disclaimer</PolicyLink>
+                    , and I consent to appointment texts at the number I provided.
+                  </Typography>
+                }
+              />
               <Button
                 type="submit"
                 variant="contained"
                 disabled={
                   submitting ||
+                  !agreed ||
                   (serviceKind === "other" && serviceDetail.trim().length < 2)
                 }
                 sx={{ alignSelf: "flex-start" }}

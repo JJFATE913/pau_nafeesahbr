@@ -10,6 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { business } from "@/lib/business";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -50,7 +51,7 @@ export default function NavBar() {
           >
             <Image
               src="/Logo_BR.PNG"
-              alt=""
+              alt={business.name}
               fill
               sizes="88px"
               style={{ objectFit: "contain" }}
@@ -66,7 +67,7 @@ export default function NavBar() {
                 lineHeight: 1.1,
               }}
             >
-              Pau-Nafeesah
+              Pau Nafeesah's
             </Typography>
             <Typography
               sx={{
