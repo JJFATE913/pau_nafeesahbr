@@ -175,6 +175,10 @@ export default function BookingCalendar() {
       );
       return;
     }
+    if (!agreedTerms || !agreedSms) {
+      setError("Please accept the policies and SMS consent before booking.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -188,6 +192,8 @@ export default function BookingCalendar() {
           time: selectedTime,
           serviceKind,
           serviceDetail: serviceKind === "other" ? serviceDetail.trim() : "",
+          termsAccepted: true,
+          smsConsent: true,
         }),
       });
       const data = await readJson<

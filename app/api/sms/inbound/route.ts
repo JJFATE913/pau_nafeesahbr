@@ -44,7 +44,7 @@ export async function POST(request: Request) {
   if (keyword === "start") {
     await optInSms(from);
     return xml(
-      `You are opted back in to appointment texts from ${business.name}. Reply STOP to opt out.`,
+      `${business.name}: you are opted in to appointment texts (confirmations, calendar links, and scheduling updates). Message frequency varies; typically 1-2 messages per appointment. Msg & data rates may apply. Reply HELP for help. Reply STOP to opt out.`,
     );
   }
 

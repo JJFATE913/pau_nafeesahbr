@@ -1,7 +1,9 @@
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { LEGAL_EFFECTIVE_DATE, type LegalDoc } from "@/lib/legal";
+import { LEGAL_EFFECTIVE_DATE, legalNav, type LegalDoc } from "@/lib/legal";
 
 export default function LegalDocument({ doc }: { doc: LegalDoc }) {
   return (
@@ -58,6 +60,29 @@ export default function LegalDocument({ doc }: { doc: LegalDoc }) {
             )}
           </Box>
         ))}
+        <Box sx={{ mt: 6, pt: 3, borderTop: "1px solid rgba(244, 167, 197, 0.14)" }}>
+          <Typography variant="overline" sx={{ color: "info.main", letterSpacing: "0.2em" }}>
+            Other policies
+          </Typography>
+          <Stack direction="row" sx={{ flexWrap: "wrap", columnGap: 2.5, rowGap: 1, mt: 1.5 }}>
+            <Link href="/legal" color="text.secondary" underline="hover" sx={{ fontSize: 14 }}>
+              All policies
+            </Link>
+            {legalNav
+              .filter((item) => item.href !== `/legal/${doc.slug}`)
+              .map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  color="text.secondary"
+                  underline="hover"
+                  sx={{ fontSize: 14 }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+          </Stack>
+        </Box>
       </Container>
     </Box>
   );

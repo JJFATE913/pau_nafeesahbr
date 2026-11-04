@@ -35,19 +35,33 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = (await request.json()) as Partial<Appointment>;
+  const body = (await request.json()) as Partial<Appointment> & {
+    termsAccepted?: unknown;
+    smsConsent?: unknown;
+  };
   const name = typeof body.name === "string" ? body.name.trim() : "";
   const phone = typeof body.phone === "string" ? body.phone.trim() : "";
   const date = typeof body.date === "string" ? body.date : "";
   const time = typeof body.time === "string" ? body.time : "";
   const serviceKind = typeof body.serviceKind === "string" ? body.serviceKind : "";
   const serviceDetail = typeof body.serviceDetail === "string" ? body.serviceDetail.trim() : "";
+  const termsAccepted = body.termsAccepted === true;
+  const smsConsent = body.smsConsent === true;
 
   if (!isValidName(name)) {
     return NextResponse.json({ error: "Please enter your full name." }, { status: 400 });
   }
   if (!isValidPhone(phone)) {
     return NextResponse.json({ error: "Please enter a valid phone number." }, { status: 400 });
+  }
+  if (!termsAccepted || !smsConsent) {
+    return NextResponse.json(
+      {
+        error:
+          "Please agree to the studio policies and SMS consent before booking online.",
+      },
+      { status: 400 },
+    );
   }
   if (!isValidBookingService(serviceKind, serviceDetail)) {
     return NextResponse.json(
@@ -79,6 +93,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "That time is not available. Please choose another." }, { status: 409 });
   }
 
+  const consentedAt = new Date().toISOString();
   const appointment: Appointment = {
     id: randomUUID(),
     name,
@@ -89,7 +104,9 @@ export async function POST(request: Request) {
     serviceDetail: serviceKind === "other" ? serviceDetail : "",
     service: formatBookingService(serviceKind, serviceDetail),
     durationMinutes,
-    createdAt: new Date().toISOString(),
+    createdAt: consentedAt,
+    termsAcceptedAt: consentedAt,
+    smsConsentAt: consentedAt,
   };
 
   // The store rejects the write if another guest claimed the slot in the meantime.
