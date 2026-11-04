@@ -61,7 +61,8 @@ export default function BookingCalendar() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [agreed, setAgreed] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(false);
+  const [agreedSms, setAgreedSms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [calendarReady, setCalendarReady] = useState(false);
   const slotsRequest = useRef(0);
@@ -126,6 +127,10 @@ export default function BookingCalendar() {
       );
       return;
     }
+    if (!agreedTerms || !agreedSms) {
+      setError("Please accept the policies and SMS consent before booking.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -139,6 +144,8 @@ export default function BookingCalendar() {
           time: selectedTime,
           serviceKind,
           serviceDetail: serviceKind === "other" ? serviceDetail.trim() : "",
+          termsAccepted: true,
+          smsConsent: true,
         }),
       });
       const data = await readJson<
@@ -327,8 +334,8 @@ export default function BookingCalendar() {
                 control={
                   <Checkbox
                     required
-                    checked={agreed}
-                    onChange={(event) => setAgreed(event.target.checked)}
+                    checked={agreedTerms}
+                    onChange={(event) => setAgreedTerms(event.target.checked)}
                     sx={{ mt: -0.6 }}
                   />
                 }
@@ -337,10 +344,30 @@ export default function BookingCalendar() {
                     I agree to the{" "}
                     <PolicyLink href="/legal/terms">Terms of Use</PolicyLink>,{" "}
                     <PolicyLink href="/legal/privacy">Privacy Policy</PolicyLink>,{" "}
-                    <PolicyLink href="/legal/booking-policy">Booking Policy</PolicyLink>,{" "}
-                    <PolicyLink href="/legal/sms-terms">SMS Terms</PolicyLink>, and{" "}
-                    <PolicyLink href="/legal/disclaimer">Service Disclaimer</PolicyLink>
-                    , and I consent to appointment texts at the number I provided.
+                    <PolicyLink href="/legal/booking-policy">Booking Policy</PolicyLink>, and{" "}
+                    <PolicyLink href="/legal/disclaimer">Service Disclaimer</PolicyLink>.
+                  </Typography>
+                }
+              />
+              <FormControlLabel
+                sx={{ alignItems: "flex-start", ml: 0, mr: 0 }}
+                control={
+                  <Checkbox
+                    required
+                    checked={agreedSms}
+                    onChange={(event) => setAgreedSms(event.target.checked)}
+                    sx={{ mt: -0.6 }}
+                  />
+                }
+                label={
+                  <Typography color="text.secondary" sx={{ fontSize: 13, lineHeight: 1.55 }}>
+                    I agree to receive SMS appointment confirmations from {business.name} at the
+                    phone number I provided. Message frequency varies (typically 1–2 messages per
+                    booking). Msg &amp; data rates may apply. Reply HELP for help. Reply STOP to
+                    opt out. See our{" "}
+                    <PolicyLink href="/legal/privacy">Privacy Policy</PolicyLink> and{" "}
+                    <PolicyLink href="/legal/sms-terms">SMS Terms</PolicyLink>. Consent is not
+                    required to book by phone.
                   </Typography>
                 }
               />
@@ -349,7 +376,8 @@ export default function BookingCalendar() {
                 variant="contained"
                 disabled={
                   submitting ||
-                  !agreed ||
+                  !agreedTerms ||
+                  !agreedSms ||
                   (serviceKind === "other" && serviceDetail.trim().length < 2)
                 }
                 sx={{ alignSelf: "flex-start" }}

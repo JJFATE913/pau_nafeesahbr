@@ -22,6 +22,10 @@ export type Appointment = {
   service: string;
   durationMinutes: number;
   createdAt: string;
+  /** ISO timestamp when guest accepted Terms/Privacy on the booking form. */
+  termsAcceptedAt?: string;
+  /** ISO timestamp when guest opted in to appointment SMS. */
+  smsConsentAt?: string;
 };
 
 const COLLECTION = "appointment";
@@ -51,6 +55,8 @@ function toAppointment(item: Item): Appointment {
     service: stored || formatBookingService(serviceKind, serviceDetail),
     durationMinutes,
     createdAt: String(item.createdAt),
+    termsAcceptedAt: item.termsAcceptedAt ? String(item.termsAcceptedAt) : undefined,
+    smsConsentAt: item.smsConsentAt ? String(item.smsConsentAt) : undefined,
   };
 }
 
