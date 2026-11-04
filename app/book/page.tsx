@@ -19,8 +19,8 @@ export default function BookPage() {
           Select a service, then a studio day (Monday–Saturday). Open start times match the length
           of that visit — 30 minutes for brow epilation, one hour for lash lifts, brow lamination,
           and other services, two hours for powder brows and lash extensions. The studio is open
-          9:00 AM–7:00 PM; a visit may run until 8:00 PM, so a 6:00 PM powder-brow or lash-extension
-          start is available. Leave your name and phone to hold the chair.
+          9:00 AM–5:30 PM, and every service can be booked with a start as late as 5:30 PM. Leave
+          your name and phone to hold the chair.
         </Typography>
         <BookingCalendar />
       </Container>

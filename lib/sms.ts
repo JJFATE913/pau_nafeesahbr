@@ -2,12 +2,14 @@ import { appointmentDuration, type Appointment } from "@/lib/appointments";
 import { business, formatSlotRange } from "@/lib/business";
 import { calendarPageUrl } from "@/lib/calendar";
 import { runtimeString } from "@/lib/cloudflare";
+import { isSmsOptedOut } from "@/lib/sms-opt-out";
 import { toE164 } from "@/lib/site";
 
 export type SmsResult = {
   client: boolean;
   studio: boolean;
   skipped: boolean;
+  clientOptedOut?: boolean;
   error?: string;
 };
 
@@ -58,24 +60,30 @@ export async function sendAppointmentTexts(appointment: Appointment): Promise<Sm
   const when = formatSlotRange(appointment.time, appointmentDuration(appointment));
   const service = appointment.service || "service to confirm";
   const page = calendarPageUrl(appointment.id);
-  const clientBody = `${business.name}: you're confirmed for ${service} on ${appointment.date} ${when}. Add it to your calendar here: ${page}`;
+  const clientBody = `${business.name}: you're confirmed for ${service} on ${appointment.date} ${when}. Add it to your calendar here: ${page}\nReply STOP to opt out of appointment texts. Reply HELP for help. Msg & data rates may apply.`;
   const studioBody = `New booking — ${appointment.name} (${appointment.phone}) for ${service} on ${appointment.date} ${when}. Add to your calendar: ${page}`;
 
   const result: SmsResult = { client: false, studio: false, skipped: false };
 
-  try {
-    await sendTwilioSms(appointment.phone, clientBody);
-    result.client = true;
-  } catch (error) {
-    result.error = error instanceof Error ? error.message : "Client text failed.";
+  if (await isSmsOptedOut(appointment.phone)) {
+    result.clientOptedOut = true;
+  } else {
+    try {
+      await sendTwilioSms(appointment.phone, clientBody);
+      result.client = true;
+    } catch (error) {
+      result.error = error instanceof Error ? error.message : "Client text failed.";
+    }
   }
 
-  try {
-    await sendTwilioSms(config.studioPhone, studioBody);
-    result.studio = true;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Studio text failed.";
-    result.error = result.error ? `${result.error} ${message}` : message;
+  if (!(await isSmsOptedOut(config.studioPhone))) {
+    try {
+      await sendTwilioSms(config.studioPhone, studioBody);
+      result.studio = true;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Studio text failed.";
+      result.error = result.error ? `${result.error} ${message}` : message;
+    }
   }
 
   return result;

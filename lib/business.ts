@@ -10,12 +10,12 @@ export const business = {
   instagram: "@pau_nafeesah_br",
   hours: [
     { day: "Sunday", value: "Closed" },
-    { day: "Monday", value: "9:00 AM – 7:00 PM" },
-    { day: "Tuesday", value: "9:00 AM – 7:00 PM" },
-    { day: "Wednesday", value: "9:00 AM – 7:00 PM" },
-    { day: "Thursday", value: "9:00 AM – 7:00 PM" },
-    { day: "Friday", value: "9:00 AM – 7:00 PM" },
-    { day: "Saturday", value: "9:00 AM – 7:00 PM" },
+    { day: "Monday", value: "9:00 AM – 5:30 PM" },
+    { day: "Tuesday", value: "9:00 AM – 5:30 PM" },
+    { day: "Wednesday", value: "9:00 AM – 5:30 PM" },
+    { day: "Thursday", value: "9:00 AM – 5:30 PM" },
+    { day: "Friday", value: "9:00 AM – 5:30 PM" },
+    { day: "Saturday", value: "9:00 AM – 5:30 PM" },
   ],
   services: [
     {
@@ -42,9 +42,8 @@ export const business = {
 } as const;
 
 export const STUDIO_OPEN_MINUTES = 9 * 60;
-export const STUDIO_CLOSE_MINUTES = 19 * 60;
-export const AFTER_HOURS_MINUTES = 60;
-export const STUDIO_LATEST_END_MINUTES = STUDIO_CLOSE_MINUTES + AFTER_HOURS_MINUTES;
+/** Last start time offered for every service. */
+export const STUDIO_CLOSE_MINUTES = 17 * 60 + 30;
 export const GRID_MINUTES = 30;
 export const CLOSED_WEEKDAYS = [0] as const;
 
@@ -58,6 +57,12 @@ export const BOOKING_SERVICES = [
 ] as const;
 
 export type BookingServiceId = (typeof BOOKING_SERVICES)[number]["id"];
+
+const LONGEST_VISIT_MINUTES = Math.max(
+  ...BOOKING_SERVICES.map((service) => service.durationMinutes),
+);
+/** A 5:30 start for a two-hour service runs until 7:30. */
+export const STUDIO_LATEST_END_MINUTES = STUDIO_CLOSE_MINUTES + LONGEST_VISIT_MINUTES;
 
 export function minutesFromTime(time: string) {
   const [hours, minutes] = time.split(":").map(Number);
@@ -102,13 +107,11 @@ export function formatDuration(minutes: number) {
 export function startTimesForDuration(durationMinutes: number) {
   const step = durationMinutes <= 30 ? GRID_MINUTES : 60;
   const times: string[] = [];
-  for (
-    let time = STUDIO_OPEN_MINUTES;
-    time + durationMinutes <= STUDIO_LATEST_END_MINUTES;
-    time += step
-  ) {
+  for (let time = STUDIO_OPEN_MINUTES; time <= STUDIO_CLOSE_MINUTES; time += step) {
     times.push(timeFromMinutes(time));
   }
+  const lastStart = timeFromMinutes(STUDIO_CLOSE_MINUTES);
+  if (!times.includes(lastStart)) times.push(lastStart);
   return times;
 }
 

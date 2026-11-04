@@ -82,6 +82,9 @@ export default function Footer() {
             <Link href="/legal" color="text.secondary" underline="hover" sx={{ fontSize: 13 }}>
               All policies
             </Link>
+            <Link href="/sms-opt-out" color="text.secondary" underline="hover" sx={{ fontSize: 13 }}>
+              SMS opt-out
+            </Link>
             {legalNav.map((item) => (
               <Link
                 key={item.href}

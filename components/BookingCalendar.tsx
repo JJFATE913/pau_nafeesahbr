@@ -50,6 +50,54 @@ function PolicyLink({ href, children }: { href: string; children: ReactNode }) {
   );
 }
 
+const consentRowSx = {
+  alignItems: "flex-start",
+  m: 0,
+  width: "100%",
+  columnGap: { xs: 1.25, md: 1.5 },
+  "& .MuiCheckbox-root": {
+    p: 0,
+    mt: { xs: "2px", md: "3px" },
+    flexShrink: 0,
+    alignSelf: "flex-start",
+  },
+  "& .MuiSvgIcon-root": {
+    fontSize: { xs: 28, md: 26 },
+  },
+  "& .MuiFormControlLabel-label": {
+    width: "100%",
+    pt: 0,
+  },
+} as const;
+
+function ConsentCheck({
+  checked,
+  onChange,
+  children,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  children: ReactNode;
+}) {
+  return (
+    <FormControlLabel
+      sx={consentRowSx}
+      control={
+        <Checkbox
+          required
+          checked={checked}
+          onChange={(event) => onChange(event.target.checked)}
+        />
+      }
+      label={
+        <Typography color="text.secondary" sx={{ fontSize: { xs: 13, md: 14 }, lineHeight: 1.55 }}>
+          {children}
+        </Typography>
+      }
+    />
+  );
+}
+
 export default function BookingCalendar() {
   const router = useRouter();
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
@@ -61,7 +109,8 @@ export default function BookingCalendar() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [agreed, setAgreed] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(false);
+  const [agreedSms, setAgreedSms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [calendarReady, setCalendarReady] = useState(false);
   const slotsRequest = useRef(0);
@@ -144,14 +193,19 @@ export default function BookingCalendar() {
       const data = await readJson<
         ApiError & {
           appointment?: { id: string };
-          sms?: { skipped?: boolean; client?: boolean; studio?: boolean };
+          sms?: { skipped?: boolean; client?: boolean; studio?: boolean; clientOptedOut?: boolean };
         }
       >(response);
       if (!response.ok || !data.appointment) {
         throw new Error(data.error || "Booking failed");
       }
-      const texts =
-        data.sms?.skipped ? "setup" : data.sms?.client && data.sms?.studio ? "sent" : "partial";
+      const texts = data.sms?.skipped
+        ? "setup"
+        : data.sms?.clientOptedOut
+          ? "opted-out"
+          : data.sms?.client && data.sms?.studio
+            ? "sent"
+            : "partial";
       router.push(`/book/confirmed/${data.appointment.id}?texts=${texts}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Booking failed");
@@ -306,7 +360,7 @@ export default function BookingCalendar() {
               Holding {formatSlotRange(selectedTime, durationMinutes)} on{" "}
               {selectedDate?.format("MMMM D, YYYY")}.
             </Typography>
-            <Stack spacing={2.5} sx={{ maxWidth: 480 }}>
+            <Stack spacing={2.5} sx={{ maxWidth: { xs: "100%", sm: 560 } }}>
               <TextField
                 label="Full name"
                 value={name}
@@ -322,34 +376,28 @@ export default function BookingCalendar() {
                 autoComplete="tel"
                 placeholder={business.phoneDisplay}
               />
-              <FormControlLabel
-                sx={{ alignItems: "flex-start", ml: 0, mr: 0 }}
-                control={
-                  <Checkbox
-                    required
-                    checked={agreed}
-                    onChange={(event) => setAgreed(event.target.checked)}
-                    sx={{ mt: -0.6 }}
-                  />
-                }
-                label={
-                  <Typography color="text.secondary" sx={{ fontSize: 13, lineHeight: 1.55 }}>
-                    I agree to the{" "}
-                    <PolicyLink href="/legal/terms">Terms of Use</PolicyLink>,{" "}
-                    <PolicyLink href="/legal/privacy">Privacy Policy</PolicyLink>,{" "}
-                    <PolicyLink href="/legal/booking-policy">Booking Policy</PolicyLink>,{" "}
-                    <PolicyLink href="/legal/sms-terms">SMS Terms</PolicyLink>, and{" "}
-                    <PolicyLink href="/legal/disclaimer">Service Disclaimer</PolicyLink>
-                    , and I consent to appointment texts at the number I provided.
-                  </Typography>
-                }
-              />
+              <Stack spacing={2} sx={{ width: "100%" }}>
+                <ConsentCheck checked={agreedTerms} onChange={setAgreedTerms}>
+                  I agree to the <PolicyLink href="/legal/terms">Terms of Use</PolicyLink> and{" "}
+                  <PolicyLink href="/legal/privacy">Privacy Policy</PolicyLink>.
+                </ConsentCheck>
+                <ConsentCheck checked={agreedSms} onChange={setAgreedSms}>
+                  I agree to receive appointment text messages from {business.name} at the mobile
+                  number I provided. These texts are booking confirmations, calendar links, and
+                  scheduling updates. Message frequency varies; typically 1–2 messages per
+                  appointment. Msg & data rates may apply. Reply HELP for help. Reply STOP to opt
+                  out. Consent is not a condition of purchase. See our{" "}
+                  <PolicyLink href="/legal/terms">Terms of Use</PolicyLink> and{" "}
+                  <PolicyLink href="/legal/privacy">Privacy Policy</PolicyLink>.
+                </ConsentCheck>
+              </Stack>
               <Button
                 type="submit"
                 variant="contained"
                 disabled={
                   submitting ||
-                  !agreed ||
+                  !agreedTerms ||
+                  !agreedSms ||
                   (serviceKind === "other" && serviceDetail.trim().length < 2)
                 }
                 sx={{ alignSelf: "flex-start" }}

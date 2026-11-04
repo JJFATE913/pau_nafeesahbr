@@ -5,6 +5,7 @@ import { calendarLinks } from "@/lib/calendar";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
+import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import dayjs from "dayjs";
 import { notFound } from "next/navigation";
@@ -55,16 +56,28 @@ export default async function BookingConfirmedPage({
             Call or text the studio at {business.phoneDisplay} if you need to change this visit.
           </Alert>
         ) : null}
+        {texts === "opted-out" ? (
+          <Alert severity="info" sx={{ mb: 3 }}>
+            The appointment is booked. We did not text this number because it is opted out of
+            appointment messages. Call {business.phoneDisplay} if you need this visit confirmed, or{" "}
+            <Link href="/sms-opt-out" color="inherit" underline="always">
+              opt back in
+            </Link>
+            .
+          </Alert>
+        ) : null}
 
         <Typography color="text.secondary" sx={{ fontSize: 18, mb: 4 }}>
           {appointment.name}, we have {when} at{" "}
           {formatSlotRange(appointment.time, appointmentDuration(appointment))}
           {appointment.service ? ` for ${appointment.service}` : ""} held at {business.name}.{" "}
           {texts === "sent"
-            ? "A confirmation text was sent to your phone and to the studio."
-            : texts === "partial"
-              ? "Please keep this page — one of the confirmation texts may not have arrived."
-              : `Keep this page to add the visit to a calendar. You can also call or text the studio at ${business.phoneDisplay}.`}{" "}
+            ? "A confirmation text was sent to your phone and to the studio. Reply STOP on that text to opt out of appointment messages."
+            : texts === "opted-out"
+              ? "Keep this page to add the visit to a calendar. This number is opted out of appointment texts."
+              : texts === "partial"
+                ? "Please keep this page — one of the confirmation texts may not have arrived."
+                : `Keep this page to add the visit to a calendar. You can also call or text the studio at ${business.phoneDisplay}.`}{" "}
           Use the buttons below to add it to Google, Outlook, or Apple Calendar.
         </Typography>
 
